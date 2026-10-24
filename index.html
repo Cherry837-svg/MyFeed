@@ -1,0 +1,671 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#7779B9">
+<title>MyFeed</title>
+
+<style>
+:root {
+    --background: #7779B9;
+    --card: #8587C5;
+    --button: #202844;
+    --button-hover: #303F83;
+    --lilac: #B4A1D5;
+    --burgundy: #704568;
+    --text: #FFFFFF;
+    --muted: #E2E3F5;
+    --border: rgba(180,161,213,.75);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: var(--background);
+    color: var(--text);
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    padding: 18px 12px 40px;
+}
+
+button, input, textarea, select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+    border: 1px solid var(--lilac);
+    border-radius: 12px;
+    background: var(--button);
+    color: white;
+    padding: 11px 15px;
+    min-height: 44px;
+    transition: background .18s, transform .18s;
+}
+
+button:hover {
+    background: var(--button-hover);
+}
+
+button:active {
+    transform: scale(.97);
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 3px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: #F4F3FF;
+    color: #20213B;
+    margin-top: 6px;
+}
+
+textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+label {
+    display: block;
+    margin-top: 14px;
+    font-size: 14px;
+}
+
+.app {
+    max-width: 760px;
+    margin: auto;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: rgba(32,40,68,.24);
+}
+
+.logo {
+    font-size: 29px;
+    font-weight: 800;
+    letter-spacing: .5px;
+    overflow-wrap: anywhere;
+}
+
+.subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.header-actions, .actions, .media-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.panel, .post {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 17px;
+    margin-bottom: 16px;
+    box-shadow: 0 5px 16px rgba(24,25,58,.12);
+    min-width: 0;
+}
+
+h2 {
+    font-size: 19px;
+    margin-bottom: 12px;
+}
+
+.primary {
+    background: #263F83;
+    font-weight: bold;
+}
+
+.danger {
+    background: #704568;
+}
+
+.secondary {
+    background: rgba(32,40,68,.62);
+}
+
+.editor {
+    display: none;
+}
+
+.editor.open {
+    display: block;
+}
+
+.check-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.check-row input {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    accent-color: #303F83;
+}
+
+.post-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.post-title {
+    font-size: 20px;
+    overflow-wrap: anywhere;
+}
+
+.post-date {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.post-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.55;
+    margin: 15px 0;
+}
+
+.media {
+    width: 100%;
+    max-height: 430px;
+    display: block;
+    border-radius: 12px;
+    margin: 12px 0;
+    background: #202844;
+    object-fit: contain;
+}
+
+audio.media {
+    height: 54px;
+}
+
+.media-name {
+    color: white;
+    font-weight: bold;
+    margin: 12px 0 8px;
+    overflow-wrap: anywhere;
+}
+
+.pinned {
+    border: 2px solid #D6B8E8;
+}
+
+.badge {
+    display: inline-block;
+    background: var(--button);
+    color: white;
+    border: 1px solid var(--lilac);
+    padding: 4px 9px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 28px 10px;
+    line-height: 1.7;
+}
+
+.small-note {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-top: 10px;
+}
+
+.status {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 8px 0;
+}
+
+#filePreview img, #filePreview video {
+    max-width: 100%;
+    max-height: 250px;
+    border-radius: 10px;
+    margin-top: 12px;
+}
+
+footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 14px;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px 8px 28px;
+    }
+
+    header, .panel, .post {
+        padding: 13px;
+        border-radius: 14px;
+    }
+
+    .logo {
+        font-size: 25px;
+    }
+
+    .header-actions {
+        width: 100%;
+    }
+
+    .header-actions button {
+        flex: 1;
+    }
+
+    .actions button, .media-actions button {
+        flex: 1 1 auto;
+    }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header>
+    <div>
+        <div class="logo" id="siteTitle">MyFeed</div>
+        <div class="subtitle">Моя личная медиалента</div>
+    </div>
+    <div class="header-actions">
+        <button id="renameButton" type="button">⚙ Название</button>
+        <button id="newButton" class="primary" type="button">＋ Создать</button>
+    </div>
+</header>
+
+<section class="panel editor" id="editor">
+    <h2 id="editorHeading">Новая публикация</h2>
+
+    <form id="postForm">
+        <label for="postTitle">Заголовок</label>
+        <input id="postTitle" maxlength="160" placeholder="Название публикации">
+
+        <label for="postText">Текст или описание</label>
+        <textarea id="postText" maxlength="10000"
+            placeholder="Напишите что-нибудь..."></textarea>
+
+        <label for="postFile">Фотография, видео или MP3</label>
+        <input id="postFile" type="file"
+            accept="image/*,video/*,audio/mpeg,.mp3">
+
+        <div class="small-note">
+            В этом начальном варианте выбранный файл доступен только
+            в текущем сеансе страницы. Постоянная загрузка появится
+            после подключения Firebase Storage.
+        </div>
+
+        <div id="filePreview"></div>
+
+        <label class="check-row">
+            <input id="allowComments" type="checkbox" checked>
+            Разрешить комментарии
+        </label>
+
+        <div class="actions" style="margin-top:16px">
+            <button class="primary" type="submit">✓ Сохранить публикацию</button>
+            <button id="cancelButton" type="button">Отмена</button>
+        </div>
+    </form>
+</section>
+
+<section id="feed" aria-live="polite">
+    <div class="empty" id="emptyMessage">
+        <h2>Добро пожаловать в MyFeed</h2>
+        Здесь будут ваши публикации.<br>
+        Нажмите «＋ Создать», чтобы добавить первую запись.
+    </div>
+</section>
+
+<footer>
+    MyFeed · Личная медиалента
+</footer>
+
+</div>
+
+<script>
+(function () {
+    const $ = id => document.getElementById(id);
+
+    const editor = $("editor");
+    const form = $("postForm");
+    const fileInput = $("postFile");
+    const preview = $("filePreview");
+    const feed = $("feed");
+
+    let posts = [];
+    let editingId = null;
+    let nextId = 1;
+    let currentObjectUrl = null;
+
+    function makeId() {
+        return nextId++;
+    }
+
+    function revokePreviewUrl() {
+        if (currentObjectUrl) {
+            URL.revokeObjectURL(currentObjectUrl);
+            currentObjectUrl = null;
+        }
+    }
+
+    function clearPreview() {
+        revokePreviewUrl();
+        preview.replaceChildren();
+    }
+
+    function showPreview(file) {
+        clearPreview();
+        if (!file) return;
+
+        currentObjectUrl = URL.createObjectURL(file);
+
+        let element;
+        if (file.type.startsWith("image/")) {
+            element = document.createElement("img");
+            element.alt = "Предварительный просмотр фотографии";
+        } else if (file.type.startsWith("video/")) {
+            element = document.createElement("video");
+            element.controls = true;
+        } else if (file.type.startsWith("audio/") ||
+                   /\.mp3$/i.test(file.name)) {
+            element = document.createElement("audio");
+            element.controls = true;
+        } else {
+            preview.textContent = "Неподдерживаемый формат файла.";
+            return;
+        }
+
+        element.src = currentObjectUrl;
+        preview.append(element);
+    }
+
+    function openEditor(post = null) {
+        editor.classList.add("open");
+        editingId = post ? post.id : null;
+
+        $("editorHeading").textContent = post
+            ? "Редактирование публикации"
+            : "Новая публикация";
+
+        $("postTitle").value = post ? post.title : "";
+        $("postText").value = post ? post.text : "";
+        $("allowComments").checked = post
+            ? post.commentsEnabled
+            : true;
+
+        fileInput.value = "";
+        clearPreview();
+
+        if (post && post.file) {
+            showPreview(post.file);
+        }
+
+        editor.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function closeEditor() {
+        editor.classList.remove("open");
+        form.reset();
+        fileInput.value = "";
+        editingId = null;
+        clearPreview();
+    }
+
+    $("newButton").addEventListener("click", () => openEditor());
+
+    $("cancelButton").addEventListener("click", closeEditor);
+
+    fileInput.addEventListener("change", () => {
+        showPreview(fileInput.files[0]);
+    });
+
+    $("renameButton").addEventListener("click", () => {
+        const current = $("siteTitle").textContent;
+        const name = prompt("Введите название сайта:", current);
+
+        if (name !== null && name.trim()) {
+            $("siteTitle").textContent = name.trim().slice(0, 60);
+            document.title = $("siteTitle").textContent;
+        }
+    });
+
+    form.addEventListener("submit", event => {
+        event.preventDefault();
+
+        const title = $("postTitle").value.trim();
+        const text = $("postText").value.trim();
+        const selectedFile = fileInput.files[0];
+
+        if (!title && !text && !selectedFile &&
+            !(editingId && posts.find(p => p.id === editingId)?.file)) {
+            alert("Добавьте заголовок, текст или медиафайл.");
+            return;
+        }
+
+        const existing = editingId
+            ? posts.find(p => p.id === editingId)
+            : null;
+
+        if (editingId && !existing) {
+            alert("Публикация не найдена.");
+            return;
+        }
+
+        const post = {
+            id: existing ? existing.id : makeId(),
+            title: title || (selectedFile
+                ? selectedFile.name
+                : "Без названия"),
+            text,
+            file: selectedFile || (existing ? existing.file : null),
+            fileName: selectedFile
+                ? selectedFile.name
+                : (existing ? existing.fileName : ""),
+            commentsEnabled: $("allowComments").checked,
+            pinned: existing ? existing.pinned : false,
+            createdAt: existing ? existing.createdAt : new Date()
+        };
+
+        if (existing) {
+            posts[posts.findIndex(p => p.id === editingId)] = post;
+        } else {
+            posts.unshift(post);
+        }
+
+        render();
+        closeEditor();
+    });
+
+    function createButton(label, action, extraClass = "") {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = label;
+        if (extraClass) button.className = extraClass;
+        button.addEventListener("click", action);
+        return button;
+    }
+
+    function render() {
+        feed.replaceChildren();
+
+        if (posts.length === 0) {
+            const empty = document.createElement("div");
+            empty.className = "empty";
+            empty.innerHTML =
+                "<h2>Добро пожаловать в MyFeed</h2>" +
+                "Здесь будут ваши публикации.<br>" +
+                "Нажмите «＋ Создать», чтобы добавить первую запись.";
+            feed.append(empty);
+            return;
+        }
+
+        const sorted = [...posts].sort((a, b) =>
+            Number(b.pinned) - Number(a.pinned)
+        );
+
+        sorted.forEach(post => {
+            const card = document.createElement("article");
+            card.className = "post" + (post.pinned ? " pinned" : "");
+
+            if (post.pinned) {
+                const badge = document.createElement("span");
+                badge.className = "badge";
+                badge.textContent = "📌 Закреплено";
+                card.append(badge);
+            }
+
+            const top = document.createElement("div");
+            top.className = "post-top";
+
+            const heading = document.createElement("div");
+            const title = document.createElement("h2");
+            title.className = "post-title";
+            title.textContent = post.title;
+
+            const date = document.createElement("div");
+            date.className = "post-date";
+            date.textContent = post.createdAt.toLocaleString("ru-RU");
+
+            heading.append(title, date);
+            top.append(heading);
+            card.append(top);
+
+            if (post.text) {
+                const text = document.createElement("div");
+                text.className = "post-text";
+                text.textContent = post.text;
+                card.append(text);
+            }
+
+            if (post.file) {
+                const file = post.file;
+                const url = URL.createObjectURL(file);
+
+                let media = null;
+
+                if (file.type.startsWith("image/")) {
+                    media = document.createElement("img");
+                    media.alt = post.title;
+                } else if (file.type.startsWith("video/")) {
+                    media = document.createElement("video");
+                    media.controls = true;
+                } else if (file.type.startsWith("audio/") ||
+                           /\.mp3$/i.test(file.name)) {
+                    const label = document.createElement("div");
+                    label.className = "media-name";
+                    label.textContent = "🎵 " + post.title;
+                    card.append(label);
+
+                    media = document.createElement("audio");
+                    media.controls = true;
+                }
+
+                if (media) {
+                    media.className = "media";
+                    media.src = url;
+                    card.append(media);
+
+                    const mediaActions = document.createElement("div");
+                    mediaActions.className = "media-actions";
+
+                    const download = document.createElement("a");
+                    download.href = url;
+                    download.download = post.fileName || post.title;
+                    download.textContent = "⬇ Скачать";
+                    download.className = "download-link";
+                    download.style.cssText =
+                        "display:inline-flex;align-items:center;" +
+                        "padding:11px 15px;min-height:44px;" +
+                        "border:1px solid var(--lilac);border-radius:12px;" +
+                        "background:var(--button);color:white;" +
+                        "text-decoration:none;";
+
+                    mediaActions.append(download);
+                    card.append(mediaActions);
+                }
+            }
+
+            const comments = document.createElement("div");
+            comments.className = "status";
+            comments.textContent = post.commentsEnabled
+                ? "💬 Комментарии включены (подключение сервиса потребуется)"
+                : "💬 Комментарии отключены";
+            card.append(comments);
+
+            const actions = document.createElement("div");
+            actions.className = "actions";
+
+            actions.append(
+                createButton("✏️ Редактировать", () => openEditor(post)),
+                createButton(post.pinned ? "📌 Открепить" : "📌 Закрепить", () => {
+                    post.pinned = !post.pinned;
+                    render();
+                }, "secondary"),
+                createButton("⬆ Вверх", () => movePost(post.id, -1)),
+                createButton("⬇ Вниз", () => movePost(post.id, 1)),
+                createButton("🗑 Удалить", () => deletePost(post.id), "danger")
+            );
+
+            card.append(actions);
+            feed.append(card);
+        });
+    }
+
+    function movePost(id, direction) {
+        const index = posts.findIndex(p => p.id === id);
+        const target = index + direction;
+
+        if (index < 0 || target < 0 || target >= posts.length) return;
+
+        [posts[index], posts[target]] = [posts[target], posts[index]];
+        render();
+    }
+
+    function deletePost(id) {
+        if (!confirm("Удалить эту публикацию?")) return;
+        posts = posts.filter(post => post.id !== id);
+        render();
+    }
+
+    render();
+})();
+</script>
+</body>
+</html>
+ 
