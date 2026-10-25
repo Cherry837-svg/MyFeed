@@ -370,7 +370,7 @@
         try {
             const { data, error } = await db
                 .from("posts")
-                .select("id, title, text, content, allow_comment, created_at")
+                .select("id, title,content, allow_comment, created_at")
                 .order("created_at", { ascending: false });
 
             if (error) {
