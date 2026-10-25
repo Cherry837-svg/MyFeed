@@ -1,31 +1,10 @@
- <script>
-const SUPABASE_URL = 'https://wzypdsspmwopehcurzzx.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY = 'ВСТАВЬ_СЮДА_СВОЙ_PUBLISHABLE_KEY';
-
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-);
-</script>
-6
-
-AmigoBandy Cherneta
-13:06 (3 минуты назад)
-3 AmigoBandy Cherneta 12:39 (5 минут назад) </style> const SUPABASE_PUBLISHABLE_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx'; </head> вс, 25 окт. 2026 г., 12:34 AmigoBa
-
-AmigoBandy Cherneta <stadnyk837@gmail.com>
-13:09 (0 минут назад)
-кому: мне
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#7779B9">
-
     <title>MyFeed</title>
-
     <style>
         :root {
             --background: #7779B9;
@@ -37,13 +16,11 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
             --muted: #E2E3F5;
             --border: rgba(180, 161, 213, 0.75);
         }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-
         body {
             background: var(--background);
             color: var(--text);
@@ -51,13 +28,9 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
             min-height: 100vh;
             padding: 18px 12px 40px;
         }
-
-        button,
-        input,
-        textarea {
+        button, input, textarea {
             font: inherit;
         }
-
         button {
             cursor: pointer;
             border: 1px solid var(--lilac);
@@ -67,18 +40,14 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
             padding: 11px 15px;
             min-height: 44px;
         }
-
         button:hover {
             background: var(--button-hover);
         }
-
         button:disabled {
             opacity: 0.55;
             cursor: not-allowed;
         }
-
-        input,
-        textarea {
+        input, textarea {
             width: 100%;
             padding: 12px;
             border-radius: 10px;
@@ -87,23 +56,19 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
             color: #20213B;
             margin-top: 6px;
         }
-
         textarea {
             min-height: 120px;
             resize: vertical;
         }
-
         label {
             display: block;
             margin-top: 14px;
             font-size: 14px;
         }
-
         .app {
             max-width: 760px;
             margin: 0 auto;
         }
-
         header {
             display: flex;
             align-items: center;
@@ -116,28 +81,22 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
             border-radius: 18px;
             background: rgba(32, 40, 68, 0.24);
         }
-
         .logo {
             font-size: 29px;
             font-weight: 800;
             letter-spacing: 0.5px;
         }
-
         .subtitle {
             color: var(--muted);
             font-size: 13px;
             margin-top: 5px;
         }
-
-        .header-actions,
-        .actions {
+        .header-actions, .actions {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
         }
-
-        .panel,
-        .post {
+        .panel, .post {
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: 18px;
@@ -146,7 +105,6 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
             box-shadow: 0 5px 16px rgba(24, 25, 58, 0.12);
             overflow-wrap: anywhere;
         }
-
         .status {
             font-size: 13px;
             color: var(--muted);
@@ -154,152 +112,109 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
             margin: 10px 0;
             overflow-wrap: anywhere;
         }
-
         .post-title {
             font-size: 20px;
             margin-bottom: 8px;
             overflow-wrap: anywhere;
         }
-
         .post-date {
             color: var(--muted);
             font-size: 12px;
             margin-bottom: 12px;
         }
-
         .post-text {
             white-space: pre-wrap;
             overflow-wrap: anywhere;
             line-height: 1.55;
             margin: 12px 0;
         }
-
         .editor {
             display: none;
         }
-
         .editor.open {
             display: block;
         }
-
         .check-row {
             display: flex;
             align-items: center;
             gap: 10px;
             margin: 15px 0;
         }
-
         .check-row input {
             width: 20px;
             height: 20px;
             margin: 0;
         }
-
         .primary {
             background: #263F83;
             font-weight: bold;
         }
-
         .danger {
             background: #704568;
         }
-
         .empty {
             text-align: center;
             color: var(--muted);
             padding: 28px 10px;
             line-height: 1.7;
         }
-
         footer {
             text-align: center;
             color: var(--muted);
             font-size: 12px;
             padding: 14px;
         }
-
         [hidden] {
             display: none !important;
         }
-
         @media (max-width: 480px) {
             body {
                 padding: 10px 8px 28px;
             }
-
-            header,
-            .panel,
-            .post {
+            header, .panel, .post {
                 padding: 13px;
                 border-radius: 14px;
             }
-
             .logo {
                 font-size: 25px;
             }
-
             .header-actions {
                 width: 100%;
             }
-
             .header-actions button {
                 flex: 1;
             }
         }
     </style>
-
     <!-- Библиотека Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://jsdelivr.net"></script>
 </head>
-
 <body>
 <div class="app">
-
     <header>
         <div>
             <div class="logo">MyFeed</div>
             <div class="subtitle">Твоя лента публикаций</div>
         </div>
-
         <div class="header-actions">
-            <button id="loginButton" type="button">
-                Войти через Google
-            </button>
-
-            <button id="logoutButton" type="button" hidden>
-                Выйти
-            </button>
+            <button id="loginButton" type="button"> Войти через Google </button>
+            <button id="logoutButton" type="button" hidden> Выйти </button>
         </div>
     </header>
 
     <section class="panel">
-        <div id="status" class="status" role="status" aria-live="polite">
-            Подключаемся к базе данных...
-        </div>
-
-        <button id="newButton" class="primary" type="button" disabled>
-            + Новая публикация
-        </button>
+        <div id="status" class="status" role="status" aria-live="polite"> Подключаемся к базе данных... </div>
+        <button id="newButton" class="primary" type="button" disabled> + Новая публикация </button>
     </section>
 
     <section id="editor" class="panel editor">
         <h2>Новая публикация</h2>
-
         <form id="postForm">
             <label for="postTitle">Заголовок</label>
-            <input
-                id="postTitle"
-                type="text"
-                maxlength="200"
-                placeholder="Введите заголовок"
-            >
+            <input id="postTitle" type="text" maxlength="200" placeholder="Введите заголовок">
 
             <label for="postText">Текст публикации</label>
-            <textarea
-                id="postText"
-                maxlength="20000"
-                placeholder="Напишите что-нибудь..."
-            ></textarea>
+            <textarea id="postText" maxlength="20000" placeholder="Напишите что-нибудь..."></textarea>
 
             <label class="check-row">
                 <input id="allowComments" type="checkbox" checked>
@@ -307,25 +222,17 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
             </label>
 
             <div class="actions">
-                <button id="saveButton" class="primary" type="submit">
-                    Опубликовать
-                </button>
-
-                <button id="cancelButton" type="button">
-                    Отмена
-                </button>
+                <button id="saveButton" class="primary" type="submit"> Опубликовать </button>
+                <button id="cancelButton" type="button"> Отмена </button>
             </div>
         </form>
     </section>
 
     <main id="feed" aria-live="polite">
-        <div class="empty">Загружаем публикации...</div>
+        <div class="empty">Загружаем publications...</div>
     </main>
 
-    <footer>
-        MyFeed
-    </footer>
-
+    <footer> MyFeed </footer>
 </div>
 
 <script>
@@ -335,31 +242,19 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
     // =========================================
     // 1. НАСТРОЙКИ SUPABASE
     // =========================================
-
-    const SUPABASE_URL =
-        "https://wzypdsspmwopehcurzzx.supabase.co";
-
-    // Замени строку ниже своим Publishable key.
-    // Замени весь текст между кавычками.
-    // Ключ не выводится в интерфейс сайта.
-
-    const SUPABASE_PUBLISHABLE_KEY =
-        "sb_publishable_XXXXXXXXXXXXXXXXXXXXXXXX";
+    const SUPABASE_URL = "https://supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ВАШ_КЛЮЧ"; // "sb_publishable_HT9K7erIXZ2KuwxOIxKqiA_SVRA7EEo"<--- ВСТАВЬТЕ ВАШ КЛЮЧ СЮДА
 
     // =========================================
     // 2. ЭЛЕМЕНТЫ СТРАНИЦЫ
     // =========================================
-
     const statusElement = document.getElementById("status");
     const feed = document.getElementById("feed");
-
     const loginButton = document.getElementById("loginButton");
     const logoutButton = document.getElementById("logoutButton");
     const newButton = document.getElementById("newButton");
-
     const editor = document.getElementById("editor");
     const form = document.getElementById("postForm");
-
     const saveButton = document.getElementById("saveButton");
     const cancelButton = document.getElementById("cancelButton");
 
@@ -370,77 +265,57 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
     // =========================================
     // 3. СЛУЖЕБНЫЕ ФУНКЦИИ
     // =========================================
-
     function setStatus(message) {
         statusElement.textContent = message;
     }
 
     function showError(message, error) {
-        // Подробности ошибки остаются в консоли браузера.
-        // Ключ Supabase намеренно не выводится.
         console.error(message, error);
-
-        const detail = error && error.message
-            ? error.message
-            : "Подробности доступны в консоли браузера.";
-
+        const detail = error && error.message ? error.message : "Подробности доступны в консоли браузера.";
         setStatus(message + " " + detail);
     }
 
     function formatDate(value) {
         if (!value) return "";
-
         const date = new Date(value);
-
         if (Number.isNaN(date.getTime())) {
             return "";
         }
-
         return date.toLocaleString("ru-RU");
     }
 
     function showEmpty(message) {
         feed.replaceChildren();
-
         const box = document.createElement("div");
+
         box.className = "empty";
         box.textContent = message;
-
         feed.appendChild(box);
     }
 
     function updateButtons() {
         loginButton.hidden = Boolean(currentUser);
         logoutButton.hidden = !currentUser;
-
         newButton.disabled = !currentUser;
 
         if (currentUser) {
             setStatus("Вы вошли в аккаунт: " + currentUser.email);
         } else {
-            setStatus(
-                "База подключена. Войдите через Google, чтобы публиковать записи."
-            );
+            setStatus("База подключена. Войдите через Google, чтобы публиковать записи.");
         }
     }
 
     // =========================================
     // 4. РЕДАКТОР ПУБЛИКАЦИИ
     // =========================================
-
     function openEditor() {
         if (!currentUser) {
             setStatus("Сначала войдите через Google.");
             return;
         }
-
         form.reset();
         editor.classList.add("open");
-
-        editor.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
+        editor.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function closeEditor() {
@@ -451,14 +326,11 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
     // =========================================
     // 5. ОТОБРАЖЕНИЕ ПУБЛИКАЦИЙ
     // =========================================
-
     function renderPosts(posts) {
         feed.replaceChildren();
 
         if (!posts.length) {
-            showEmpty(
-                "Публикаций пока нет. Создайте первую запись!"
-            );
+            showEmpty("Публикаций пока нет. Создайте первую запись!");
             return;
         }
 
@@ -476,23 +348,16 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
 
             const text = document.createElement("div");
             text.className = "post-text";
-
-            // Отображаем только текст публикации.
-            // Ключ Supabase сюда не передаётся.
             text.textContent = post.text || post.content || "";
 
             const comments = document.createElement("div");
             comments.className = "status";
-            comments.textContent = post.allow_comment
-                ? "💬 Комментарии разрешены"
-                : "💬 Комментарии отключены";
+            comments.textContent = post.allow_comment ? "💬 Комментарии разрешены" : "💬 Комментарии отключены";
 
             card.append(title, date);
-
             if (text.textContent) {
                 card.appendChild(text);
             }
-
             card.appendChild(comments);
             feed.appendChild(card);
         }
@@ -501,19 +366,15 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
     // =========================================
     // 6. ЗАГРУЗКА ИЗ БАЗЫ ДАННЫХ
     // =========================================
-
     async function loadPosts() {
         if (!db || loading) return;
-
         loading = true;
         setStatus("Загружаем публикации из базы...");
 
         try {
             const { data, error } = await db
                 .from("posts")
-                .select(
-                    "id, title, text, content, allow_comment, created_at"
-                )
+                .select("id, title, text, content, allow_comment, created_at")
                 .order("created_at", { ascending: false });
 
             if (error) {
@@ -521,19 +382,10 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
             }
 
             renderPosts(data || []);
-
-            setStatus(
-                "Публикаций загружено: " + (data || []).length
-            );
+            setStatus("Публикаций загружено: " + (data || []).length);
         } catch (error) {
-            showEmpty(
-                "Не удалось загрузить публикации. Проверьте подключение и настройки таблицы posts."
-            );
-
-            showError(
-                "Ошибка загрузки публикаций из Supabase:",
-                error
-            );
+            showEmpty("Не удалось загрузить публикации. Проверьте подключение и настройки таблицы posts.");
+            showError("Ошибка загрузки публикаций из Supabase:", error);
         } finally {
             loading = false;
         }
@@ -542,17 +394,12 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
     // =========================================
     // 7. ВХОД ЧЕРЕЗ GOOGLE
     // =========================================
-
     async function signIn() {
         if (!db) {
-            setStatus(
-                "Supabase не настроен. Проверьте адрес и Publishable key в коде."
-            );
+            setStatus("Supabase не настроен. Проверьте адрес и Publishable key в коде.");
             return;
         }
-
         setStatus("Открываем вход через Google...");
-
         try {
             const { error } = await db.auth.signInWithOAuth({
                 provider: "google",
@@ -560,12 +407,8 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
                     redirectTo: window.location.href.split("#")[0]
                 }
             });
-
             if (error) {
-                showError(
-                    "Не удалось начать вход через Google:",
-                    error
-                );
+                showError("Не удалось начать вход через Google:", error);
             }
         } catch (error) {
             showError("Ошибка входа через Google:", error);
@@ -575,17 +418,13 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
     // =========================================
     // 8. ВЫХОД ИЗ АККАУНТА
     // =========================================
-
     async function signOut() {
         if (!db) return;
-
         try {
             const { error } = await db.auth.signOut();
-
             if (error) {
                 throw error;
             }
-
             currentUser = null;
             closeEditor();
             updateButtons();
@@ -597,30 +436,16 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
     // =========================================
     // 9. СОХРАНЕНИЕ НОВОЙ ПУБЛИКАЦИИ
     // =========================================
-
     async function savePost(event) {
         event.preventDefault();
-
         if (!db || !currentUser) {
-            setStatus(
-                "Для сохранения публикации сначала войдите через Google."
-            );
+            setStatus("Для сохранения публикации сначала войдите через Google.");
             return;
         }
 
-        const title = document
-            .getElementById("postTitle")
-            .value
-            .trim();
-
-        const text = document
-            .getElementById("postText")
-            .value
-            .trim();
-
-        const allowComments = document
-            .getElementById("allowComments")
-            .checked;
+        const title = document.getElementById("postTitle").value.trim();
+        const text = document.getElementById("postText").value.trim();
+        const allowComments = document.getElementById("allowComments").checked;
 
         if (!title && !text) {
             setStatus("Введите заголовок или текст публикации.");
@@ -647,13 +472,9 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
 
             closeEditor();
             setStatus("Публикация сохранена в базе данных!");
-
             await loadPosts();
         } catch (error) {
-            showError(
-                "Не удалось сохранить публикацию. Проверьте права доступа и структуру таблицы:",
-                error
-            );
+            showError("Не удалось сохранить публикацию. Проверьте права доступа и структуру таблицы:", error);
         } finally {
             saveButton.disabled = false;
         }
@@ -662,12 +483,9 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
     // =========================================
     // 10. ЗАПУСК ПРИЛОЖЕНИЯ
     // =========================================
-
     async function start() {
         if (!window.supabase) {
-            setStatus(
-                "Не удалось загрузить библиотеку Supabase. Проверьте интернет-соединение."
-            );
+            setStatus("Не удалось загрузить библиотеку Supabase. Проверьте интернет-соединение.");
             return;
         }
 
@@ -678,39 +496,25 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
             !SUPABASE_PUBLISHABLE_KEY.startsWith("sb_publishable_") ||
             SUPABASE_PUBLISHABLE_KEY.includes("XXXXXXXX")
         ) {
-            setStatus(
-                "Проверьте адрес Supabase и вставьте свой Publishable key в настройки кода."
-            );
+            setStatus("Проверьте адрес Supabase и вставьте свой Publishable key в настройки кода.");
             return;
         }
 
         try {
-            db = window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_PUBLISHABLE_KEY
-            );
+            db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
             const { data, error } = await db.auth.getSession();
-
             if (error) {
                 throw error;
             }
 
-            currentUser = data.session
-                ? data.session.user
-                : null;
-
+            currentUser = data.session ? data.session.user : null;
             updateButtons();
-
             await loadPosts();
 
             db.auth.onAuthStateChange((_event, session) => {
-                currentUser = session
-                    ? session.user
-                    : null;
-
+                currentUser = session ? session.user : null;
                 updateButtons();
-
                 setTimeout(() => {
                     loadPosts();
                 }, 0);
@@ -723,7 +527,6 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
     // =========================================
     // 11. ОБРАБОТЧИКИ КНОПОК
     // =========================================
-
     loginButton.addEventListener("click", signIn);
     logoutButton.addEventListener("click", signOut);
     newButton.addEventListener("click", openEditor);
@@ -733,11 +536,6 @@ AmigoBandy Cherneta <stadnyk837@gmail.com>
     start();
 })();
 </script>
-
 </body>
 </html>
 
-вс, 25 окт. 2026 г., 13:06 AmigoBandy Cherneta <stadnyk837@gmail.com>:
-...
-
-[Показана часть сообщения]  Показать полностью
