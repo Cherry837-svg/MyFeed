@@ -286,9 +286,7 @@
 
     function showEmpty(message) {
         feed.replaceChildren();
-        const box = document.createElement("div");
-
-        box.className = "empty";
+     box.className = "empty";
         box.textContent = message;
         feed.appendChild(box);
     }
@@ -488,26 +486,6 @@
             setStatus("Не удалось загрузить библиотеку Supabase. Проверьте интернет-соединение.");
             return;
         }
-            db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-
-            const { data, error } = await db.auth.getSession();
-            if (error) {
-                throw error;
-            }
-
-            currentUser = data.session ? data.session.user : null;
-            updateButtons();
-            await loadPosts();
-
-            db.auth.onAuthStateChange((_event, session) => {
-                currentUser = session ? session.user : null;
-                updateButtons();
-                setTimeout(() => {
- async function start() {
-        if (!window.supabase) {
-            setStatus("Не удалось загрузить библиотеку Supabase. Проверьте интернет-соединение.");
-            return;
-        }
 
         try {
             db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
@@ -528,31 +506,24 @@
                     loadPosts();
                 }, 0);
             });
-       async function start() {
-        if (!window.supabase) {
-            setStatus("Не удалось загрузить библиотеку Supabase. Проверьте интернет-соединение.");
-            return;
+        } catch (error) {
+            showError("Ошибка подключения к Supabase:", error);
         }
+    }
 
-        try {
-            db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    // =========================================
+    // 11. ОБРАБОТЧИКИ КНОПОК
+    // =========================================
+    loginButton.addEventListener("click", signIn);
+    logoutButton.addEventListener("click", signOut);
+    newButton.addEventListener("click", openEditor);
+    cancelButton.addEventListener("click", closeEditor);
+    form.addEventListener("submit", savePost);
 
-            const { data, error } = await db.auth.getSession();
-            if (error) {
-                throw error;
-            }
-
-            currentUser = data.session ? data.session.user : null;
-            updateButtons();
-            await loadPosts();
-
-            db.auth.onAuthStateChange((_event, session) => {
-                currentUser = session ? session.user : null;
-                updateButtons();
-                setTimeout(() => {
-                    loadPosts();
-                }, 0);
-            });
- </script>
+    start();
+})();
+</script>
 </body>
 </html>
+
+ 
