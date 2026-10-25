@@ -243,7 +243,7 @@
     // 1. НАСТРОЙКИ SUPABASE
     // =========================================
     const SUPABASE_URL = "https://supabase.co";
-    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ВАШ_КЛЮЧ"; // "sb_publishable_HT9K7erIXZ2KuwxOIxKqiA_SVRA7EEo"<--- ВСТАВЬТЕ ВАШ КЛЮЧ СЮДА
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_HT9K7erIXZ2KuwxOIxKqiA_SVRA7EEo"; // <--- ВСТАВЬТЕ ВАШ КЛЮЧ СЮДА
 
     // =========================================
     // 2. ЭЛЕМЕНТЫ СТРАНИЦЫ
@@ -488,15 +488,24 @@
             setStatus("Не удалось загрузить библиотеку Supabase. Проверьте интернет-соединение.");
             return;
         }
+            db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-        if (
-            !SUPABASE_URL ||
-            !SUPABASE_URL.startsWith("https://") ||
-            !SUPABASE_PUBLISHABLE_KEY ||
-            !SUPABASE_PUBLISHABLE_KEY.startsWith("sb_publishable_") ||
-            SUPABASE_PUBLISHABLE_KEY.includes("XXXXXXXX")
-        ) {
-            setStatus("Проверьте адрес Supabase и вставьте свой Publishable key в настройки кода.");
+            const { data, error } = await db.auth.getSession();
+            if (error) {
+                throw error;
+            }
+
+            currentUser = data.session ? data.session.user : null;
+            updateButtons();
+            await loadPosts();
+
+            db.auth.onAuthStateChange((_event, session) => {
+                currentUser = session ? session.user : null;
+                updateButtons();
+                setTimeout(() => {
+ async function start() {
+        if (!window.supabase) {
+            setStatus("Не удалось загрузить библиотеку Supabase. Проверьте интернет-соединение.");
             return;
         }
 
@@ -519,23 +528,31 @@
                     loadPosts();
                 }, 0);
             });
-        } catch (error) {
-            showError("Ошибка подключения к Supabase:", error);
+       async function start() {
+        if (!window.supabase) {
+            setStatus("Не удалось загрузить библиотеку Supabase. Проверьте интернет-соединение.");
+            return;
         }
-    }
 
-    // =========================================
-    // 11. ОБРАБОТЧИКИ КНОПОК
-    // =========================================
-    loginButton.addEventListener("click", signIn);
-    logoutButton.addEventListener("click", signOut);
-    newButton.addEventListener("click", openEditor);
-    cancelButton.addEventListener("click", closeEditor);
-    form.addEventListener("submit", savePost);
+        try {
+            db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-    start();
-})();
-</script>
+            const { data, error } = await db.auth.getSession();
+            if (error) {
+                throw error;
+            }
+
+            currentUser = data.session ? data.session.user : null;
+            updateButtons();
+            await loadPosts();
+
+            db.auth.onAuthStateChange((_event, session) => {
+                currentUser = session ? session.user : null;
+                updateButtons();
+                setTimeout(() => {
+                    loadPosts();
+                }, 0);
+            });
+ </script>
 </body>
 </html>
-
