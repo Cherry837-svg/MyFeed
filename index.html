@@ -1,1297 +1,382 @@
-﻿ <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=5">
-    <meta name="theme-color" content="#7779B9">
-
-    <title>MyFeed</title>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <style>
-        :root {
-            --background: #7779B9;
-            --card: #8587C5;
-            --button: #202844;
-            --button-hover: #303F83;
-            --lilac: #B4A1D5;
-            --text: #C5D2C1;
-            --muted: #E2E3F5;
-            --border: rgba(180, 161, 213, 0.75);
-            --post-text-size: 16px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background: var(--background);
-            color: var(--text);
-            font-family: Arial, sans-serif;
-            min-height: 100vh;
-            padding: 18px 12px 40px;
-        }
-
-        button, input, textarea, select {
-            font: inherit;
-        }
-
-        button {
-            cursor: pointer;
-            border: 1px solid var(--lilac);
-            border-radius: 12px;
-            background: var(--button);
-            color: white;
-            padding: 11px 15px;
-            min-height: 44px;
-        }
-
-        button:hover {
-            background: var(--button-hover);
-        }
-
-        button:disabled {
-            opacity: 0.55;
-            cursor: not-allowed;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            background: #F4F3FF;
-            color: #20213B;
-            margin-top: 6px;
-        }
-
-        textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        input[type="checkbox"],
-        input[type="color"] {
-            width: auto;
-            margin: 0;
-        }
-
-        input[type="file"] {
-            padding: 10px;
-        }
-
-        label {
-            display: block;
-            margin-top: 14px;
-            font-size: 14px;
-        }
-
-        .app {
-            max-width: 760px;
-            margin: 0 auto;
-        }
-
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 16px;
-            padding: 18px;
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            background: rgba(32, 40, 68, 0.24);
-        }
-
-        .logo {
-            font-size: 29px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-        }
-
-        .subtitle {
-            color: var(--muted);
-            font-size: 13px;
-            margin-top: 5px;
-        }
-
-        .header-actions,
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .panel, .post {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 17px;
-            margin-bottom: 16px;
-            box-shadow: 0 5px 16px rgba(24, 25, 58, 0.12);
-            overflow-wrap: anywhere;
-        }
-
-        .status {
-            font-size: 13px;
-            color: var(--muted);
-            line-height: 1.5;
-            margin: 10px 0;
-            overflow-wrap: anywhere;
-        }
-
-        .post-title {
-            font-size: 20px;
-            margin-bottom: 8px;
-            overflow-wrap: anywhere;
-            color: var(--text);
-        }
-
-        .post-date {
-            color: var(--muted);
-            font-size: 12px;
-            margin-bottom: 12px;
-        }
-
-        .post-text {
-            color: var(--text);
-            font-size: var(--post-text-size);
-            white-space: pre-wrap;
-            overflow-wrap: anywhere;
-            line-height: 1.65;
-            margin: 12px 0;
-        }
-
-        .editor {
-            display: none;
-        }
-
-        .editor.open {
-            display: block;
-        }
-
-        .check-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 15px 0;
-        }
-
-        .check-row input {
-            width: 20px;
-            height: 20px;
-            margin: 0;
-        }
-
-        .primary {
-            background: #263F83;
-            font-weight: bold;
-        }
-
-        .danger {
-            background: #704568;
-        }
-
-        .empty {
-            text-align: center;
-            color: var(--muted);
-            padding: 28px 10px;
-            line-height: 1.7;
-        }
-
-        .media-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px;
-            margin: 14px 0;
-        }
-
-        .media-item {
-            min-width: 0;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 8px;
-            background: rgba(32, 40, 68, 0.18);
-        }
-
-        .media-image {
-            display: block;
-            width: 100%;
-            max-height: 360px;
-            object-fit: contain;
-            border-radius: 8px;
-            cursor: zoom-in;
-        }
-
-        .media-item video {
-            display: block;
-            width: 100%;
-            max-height: 360px;
-            border-radius: 8px;
-            background: #111;
-        }
-
-        .media-item audio {
-            display: block;
-            width: 100%;
-            max-width: 100%;
-            margin: 8px 0;
-        }
-
-        .media-name {
-            font-size: 13px;
-            overflow-wrap: anywhere;
-            margin: 8px 0;
-        }
-
-        .media-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 8px;
-        }
-
-        .media-actions button,
-        .media-actions a {
-            font-size: 12px;
-            padding: 8px 10px;
-            min-height: 36px;
-        }
-
-        .media-actions a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            background: var(--button);
-            border: 1px solid var(--lilac);
-            border-radius: 10px;
-            text-decoration: none;
-        }
-
-        .settings-row {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 12px;
-        }
-
-        .settings-row label {
-            margin: 0;
-        }
-
-        .settings-row input[type="color"] {
-            height: 42px;
-            width: 60px;
-            padding: 3px;
-        }
-
-        .settings-row input[type="range"] {
-            width: 150px;
-        }
-
-        .preview-text {
-            margin-top: 12px;
-            padding: 12px;
-            border-radius: 10px;
-            background: rgba(32, 40, 68, 0.2);
-            line-height: 1.6;
-            overflow-wrap: anywhere;
-        }
-
-        .modal {
-            position: fixed;
-            inset: 0;
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.94);
-            padding: 12px;
-            touch-action: pan-y;
-        }
-
-        .modal[hidden] {
-            display: none !important;
-        }
-
-        .modal img {
-            display: block;
-            max-width: 100%;
-            max-height: 90vh;
-            object-fit: contain;
-            touch-action: pinch-zoom;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            z-index: 2;
-        }
-
-        footer {
-            text-align: center;
-            color: var(--muted);
-            font-size: 12px;
-            padding: 14px;
-        }
-
-        [hidden] {
-            display: none !important;
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 10px 8px 28px;
-            }
-
-            header, .panel, .post {
-                padding: 13px;
-                border-radius: 14px;
-            }
-
-            .logo {
-                font-size: 25px;
-            }
-
-            .header-actions {
-                width: 100%;
-            }
-
-            .header-actions button {
-                flex: 1;
-            }
-
-            .media-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#7779B9">
+  <title>MyFeed</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --background:#7779B9; --card:#8587C5; --button:#202844;
+      --button-hover:#303F83; --lilac:#B4A1D5; --text:#fff;
+      --muted:#E2E3F5; --border:rgba(180,161,213,.75);
+    }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { background:var(--background); color:var(--text); font-family:Arial,sans-serif; min-height:100vh; padding:18px 12px 40px; }
+    button,input,textarea { font:inherit; }
+    button { cursor:pointer; border:1px solid var(--lilac); border-radius:12px; background:var(--button); color:#fff; padding:11px 15px; min-height:44px; }
+    button:hover { background:var(--button-hover); }
+    button:disabled { opacity:.55; cursor:not-allowed; }
+    input,textarea { width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:#F4F3FF; color:#20213B; margin-top:6px; }
+    textarea { min-height:120px; resize:vertical; }
+    label { display:block; margin-top:14px; font-size:14px; }
+    .app { max-width:760px; margin:0 auto; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:16px; padding:18px; border:1px solid var(--border); border-radius:18px; background:rgba(32,40,68,.24); }
+    .logo { font-size:29px; font-weight:800; letter-spacing:.5px; }
+    .subtitle { color:var(--muted); font-size:13px; margin-top:5px; }
+    .header-actions,.actions { display:flex; flex-wrap:wrap; gap:8px; }
+    .panel,.post { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:17px; margin-bottom:16px; box-shadow:0 5px 16px rgba(24,25,58,.12); overflow-wrap:anywhere; }
+    .status { font-size:13px; color:var(--muted); line-height:1.5; margin:10px 0; overflow-wrap:anywhere; }
+    .post-title { font-size:20px; margin-bottom:8px; }
+    .post-date { color:var(--muted); font-size:12px; margin-bottom:12px; }
+    .post-text { white-space:pre-wrap; line-height:1.55; margin:12px 0; }
+    .editor { display:none; }
+    .editor.open { display:block; }
+    .check-row { display:flex; align-items:center; gap:10px; margin:15px 0; }
+    .check-row input { width:20px; height:20px; margin:0; }
+    .primary { background:#263F83; font-weight:bold; }
+    .danger { background:#704568; }
+    .empty { text-align:center; color:var(--muted); padding:28px 10px; line-height:1.7; }
+    .media-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:12px 0; }
+    .media-item { min-width:0; padding:8px; border:1px solid var(--border); border-radius:12px; background:rgba(32,40,68,.12); }
+    .media-image,.media-item video { display:block; width:100%; max-height:420px; object-fit:contain; border-radius:8px; }
+    .media-item audio { width:100%; }
+    .media-name { font-size:12px; color:var(--muted); overflow-wrap:anywhere; margin:7px 0; }
+    .media-actions { margin-top:7px; }
+    .media-actions a { color:white; }
+    footer { text-align:center; color:var(--muted); font-size:12px; padding:14px; }
+    [hidden] { display:none !important; }
+    @media(max-width:480px) {
+      body { padding:10px 8px 28px; }
+      header,.panel,.post { padding:13px; border-radius:14px; }
+      .logo { font-size:25px; }
+      .header-actions { width:100%; }
+      .header-actions button { flex:1; }
+    }
+  </style>
 </head>
 <body>
-
 <div class="app">
+  <header>
+    <div><div class="logo">MyFeed</div><div class="subtitle">Твоя лента публикаций</div></div>
+    <div class="header-actions">
+      <button id="loginButton" type="button">Войти через Google</button>
+      <button id="logoutButton" type="button" hidden>Выйти</button>
+    </div>
+  </header>
 
-    <header>
-        <div>
-            <div class="logo">MyFeed</div>
-            <div class="subtitle">Твоя лента публикаций</div>
-        </div>
+  <section class="panel">
+    <div id="status" class="status" role="status" aria-live="polite">Подключаемся к базе данных...</div>
+    <button id="newButton" class="primary" type="button" disabled>+ Новая публикация</button>
+  </section>
 
-        <div class="header-actions">
-            <button id="loginButton" type="button">
-                Войти через Google
-            </button>
+  <section id="editor" class="panel editor">
+    <h2 id="editorHeading">Новая публикация</h2>
+    <form id="postForm">
+      <label for="postTitle">Заголовок</label>
+      <input id="postTitle" type="text" maxlength="200" placeholder="Введите заголовок">
+      <label for="postText">Текст публикации</label>
+      <textarea id="postText" maxlength="20000" placeholder="Напишите что-нибудь..."></textarea>
+      <label for="mediaFiles">Фотографии, видео или аудио (можно выбрать несколько)</label>
+      <input id="mediaFiles" type="file" accept="image/*,video/*,audio/*,.mp3,.m4a,.wav,.ogg,.mp4,.webm,.mov" multiple>
+      <div id="selectedFiles" class="status">Новые файлы не выбраны.</div>
+      <label class="check-row"><input id="allowComments" type="checkbox" checked><span>Разрешить комментарии</span></label>
+      <div class="actions">
+        <button id="saveButton" class="primary" type="submit">Опубликовать</button>
+        <button id="cancelButton" type="button">Отмена</button>
+      </div>
+    </form>
+  </section>
 
-            <button id="logoutButton" type="button" hidden>
-                Выйти
-            </button>
-        </div>
-    </header>
-
-    <section class="panel">
-        <h2>Лента публикаций</h2>
-
-        <div id="status" class="status" role="status" aria-live="polite">
-            Подключаемся к базе данных...
-        </div>
-
-        <button id="newButton" class="primary" type="button" disabled>
-            + Новая публикация
-        </button>
-
-        <button id="settingsButton" type="button">
-            ⚙ Настройки оформления
-        </button>
-    </section>
-
-    <section id="settingsPanel" class="panel" hidden>
-        <h2>Настройки оформления</h2>
-
-        <label for="textColor">Цвет текста публикаций</label>
-
-        <div class="settings-row">
-            <input id="textColor" type="color" value="#C5D2C1">
-
-            <button id="defaultColorButton" type="button">
-                Цвет по умолчанию
-            </button>
-        </div>
-
-        <label for="textSize">Размер текста</label>
-
-        <div class="settings-row">
-            <input
-                id="textSize"
-                type="range"
-                min="12"
-                max="28"
-                value="16"
-            >
-
-            <span id="textSizeValue">16 px</span>
-        </div>
-
-        <div class="preview-text" id="textPreview">
-            Так будет выглядеть текст твоих публикаций.
-            Настройки сохраняются на этом устройстве.
-        </div>
-    </section>
-
-    <section id="editor" class="panel editor">
-        <h2>Новая публикация</h2>
-
-        <form id="postForm">
-
-            <label for="postTitle">Заголовок</label>
-
-            <input
-                id="postTitle"
-                type="text"
-                maxlength="200"
-                placeholder="Введите заголовок"
-            >
-
-            <label for="postText">Текст публикации</label>
-
-            <textarea
-                id="postText"
-                maxlength="20000"
-                placeholder="Напишите что-нибудь..."
-            ></textarea>
-
-            <label for="mediaFiles">
-                Фотографии, MP3 или видео
-            </label>
-
-            <input
-                id="mediaFiles"
-                type="file"
-                accept="image/*,audio/mpeg,audio/mp3,video/*"
-                multiple
-            >
-
-            <div class="status">
-                Можно выбрать несколько файлов. Большие файлы
-                зависят от лимитов хранилища Supabase.
-            </div>
-
-            <div id="selectedFiles" class="status">
-                Файлы не выбраны.
-            </div>
-
-            <label class="check-row">
-                <input id="allowComments" type="checkbox" checked>
-                <span>Разрешить комментарии</span>
-            </label>
-
-            <div class="actions">
-                <button id="saveButton" class="primary" type="submit">
-                    Опубликовать
-                </button>
-
-                <button id="cancelButton" type="button">
-                    Отмена
-                </button>
-            </div>
-
-        </form>
-    </section>
-
-    <main id="feed" aria-live="polite">
-        <div class="empty">Загружаем публикации...</div>
-    </main>
-
-    <footer>MyFeed</footer>
-
-</div>
-
-<div id="imageModal" class="modal" hidden>
-    <button id="closeImageModal" class="modal-close" type="button">
-        ✕ Закрыть
-    </button>
-
-    <img id="modalImage" alt="Увеличенная фотография">
+  <main id="feed" aria-live="polite"><div class="empty">Загружаем публикации...</div></main>
+  <footer>MyFeed</footer>
 </div>
 
 <script>
 (() => {
-    "use strict";
+  "use strict";
 
-    // =========================================
-    // 1. НАСТРОЙКИ SUPABASE
-    // =========================================
+  const SUPABASE_URL = "https://wzypdsspmwopehcurzzx.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_HT9K7erIXZ2KuwxOIxKqiA_SVRA7EEo";
+  const STORAGE_BUCKET = "MyFeed";
+  const MEDIA_MARKER = "\n\n[[MYFEED_MEDIA_V1:";
 
-    const SUPABASE_URL =
-        "https://wzypdsspmwopehcurzzx.supabase.co";
+  const $ = id => document.getElementById(id);
+  const statusElement = $("status"), feed = $("feed"), editor = $("editor"), form = $("postForm");
+  const loginButton = $("loginButton"), logoutButton = $("logoutButton"), newButton = $("newButton");
+  const saveButton = $("saveButton"), cancelButton = $("cancelButton");
+  const titleInput = $("postTitle"), textInput = $("postText"), commentsInput = $("allowComments");
+  const filesInput = $("mediaFiles"), selectedFiles = $("selectedFiles"), editorHeading = $("editorHeading");
 
-    const SUPABASE_PUBLISHABLE_KEY =
-        "sb_publishable_HT9K7erIXZ2KuwxOIxKqiA_SVRA7EEo";
+  let db = null, currentUser = null, editingPost = null, loading = false, currentMedia = [];
 
-    // Имя bucket в Supabase Storage.
-    // Он должен существовать в панели Supabase.
-    const STORAGE_BUCKET = "MyFeed";
+  function setStatus(message) { statusElement.textContent = message; }
+  function showError(message, error) {
+    console.error(message, error);
+    setStatus(message + " " + (error?.message || "Подробности доступны в консоли браузера."));
+  }
+  function formatDate(value) {
+    const date = new Date(value);
+    return value && !Number.isNaN(date.getTime()) ? date.toLocaleString("ru-RU") : "";
+  }
+  function showEmpty(message) {
+    feed.replaceChildren();
+    const box = document.createElement("div");
+    box.className = "empty"; box.textContent = message; feed.appendChild(box);
+  }
+  function updateButtons() {
+    loginButton.hidden = Boolean(currentUser);
+    logoutButton.hidden = !currentUser;
+    newButton.disabled = !currentUser;
+    if (currentUser) setStatus("Вы вошли в аккаунт: " + (currentUser.email || ""));
+    else setStatus("База подключена. Войдите через Google, чтобы публиковать записи.");
+  }
 
-    // =========================================
-    // 2. ЭЛЕМЕНТЫ СТРАНИЦЫ
-    // =========================================
-
-    const statusElement = document.getElementById("status");
-    const feed = document.getElementById("feed");
-
-    const loginButton = document.getElementById("loginButton");
-    const logoutButton = document.getElementById("logoutButton");
-    const newButton = document.getElementById("newButton");
-
-    const editor = document.getElementById("editor");
-    const form = document.getElementById("postForm");
-    const saveButton = document.getElementById("saveButton");
-    const cancelButton = document.getElementById("cancelButton");
-
-    const mediaFiles = document.getElementById("mediaFiles");
-    const selectedFiles = document.getElementById("selectedFiles");
-
-    const settingsButton = document.getElementById("settingsButton");
-    const settingsPanel = document.getElementById("settingsPanel");
-    const textColor = document.getElementById("textColor");
-    const textSize = document.getElementById("textSize");
-    const textSizeValue = document.getElementById("textSizeValue");
-    const textPreview = document.getElementById("textPreview");
-    const defaultColorButton =
-        document.getElementById("defaultColorButton");
-
-    const imageModal = document.getElementById("imageModal");
-    const modalImage = document.getElementById("modalImage");
-    const closeImageModal =
-        document.getElementById("closeImageModal");
-
-    let db = null;
-    let currentUser = null;
-    let loading = false;
-
-    // =========================================
-    // 3. СЛУЖЕБНЫЕ ФУНКЦИИ
-    // =========================================
-
-    function setStatus(message) {
-        statusElement.textContent = message;
+  function parseStoredContent(content) {
+    const value = String(content || "");
+    const markerIndex = value.lastIndexOf(MEDIA_MARKER);
+    if (markerIndex < 0) return { text: value, media: [] };
+    const jsonStart = markerIndex + MEDIA_MARKER.length;
+    const jsonEnd = value.indexOf("]]", jsonStart);
+    if (jsonEnd < 0) return { text: value, media: [] };
+    try {
+      const media = JSON.parse(value.slice(jsonStart, jsonEnd));
+      if (!Array.isArray(media)) return { text: value, media: [] };
+      return {
+        text: value.slice(0, markerIndex),
+        media: media.filter(item => item && typeof item.url === "string" &&
+          ["image", "audio", "video"].includes(item.type))
+      };
+    } catch (error) {
+      console.warn("Не удалось прочитать сведения о медиа:", error);
+      return { text: value, media: [] };
     }
-
-    function showError(message, error) {
-        console.error(message, error);
-
-        const detail = error && error.message
-            ? error.message
-            : "Подробности доступны в консоли браузера.";
-
-        setStatus(message + " " + detail);
+  }
+  function makeStoredContent(text, media) {
+    return media.length ? text + MEDIA_MARKER + JSON.stringify(media) + "]]" : text;
+  }
+  function detectMediaType(file) {
+    const mime = (file.type || "").toLowerCase();
+    const name = (file.name || "").toLowerCase();
+    if (mime.startsWith("image/") || /\.(jpg|jpeg|png|gif|webp|bmp|svg|heic|heif)$/.test(name)) return "image";
+    if (mime.startsWith("video/") || /\.(mp4|webm|mov|m4v|avi|mkv|3gp)$/.test(name)) return "video";
+    if (mime.startsWith("audio/") || /\.(mp3|m4a|aac|wav|ogg|oga|flac|opus|wma)$/.test(name)) return "audio";
+    return null;
+  }
+  function safeFileName(name) {
+    return String(name || "file").normalize("NFKD").replace(/[^\w.-]+/g, "_").replace(/^_+|_+$/g, "").slice(-100) || "file";
+  }
+  async function uploadMedia(files) {
+    const uploaded = [];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i], type = detectMediaType(file);
+      if (!type) throw new Error("Неподдерживаемый тип файла: " + file.name);
+      const path = currentUser.id + "/" + Date.now() + "_" + i + "_" + safeFileName(file.name);
+      setStatus("Загружаем файл " + (i + 1) + " из " + files.length + ": " + file.name);
+      const { error } = await db.storage.from(STORAGE_BUCKET).upload(path, file, {
+        cacheControl: "3600", upsert: false, contentType: file.type || undefined
+      });
+      if (error) throw error;
+      const { data } = db.storage.from(STORAGE_BUCKET).getPublicUrl(path);
+      uploaded.push({ name: file.name, type, path, url: data.publicUrl });
     }
-
-    function formatDate(value) {
-        if (!value) return "";
-
-        const date = new Date(value);
-
-        if (Number.isNaN(date.getTime())) {
-            return "";
-        }
-
-        return date.toLocaleString("ru-RU");
+    return uploaded;
+  }
+  function addMediaToCard(parent, media) {
+    if (!media.length) return;
+    const grid = document.createElement("div"); grid.className = "media-grid";
+    for (const item of media) {
+      if (!item.url) continue;
+      const box = document.createElement("div"); box.className = "media-item";
+      const name = document.createElement("div"); name.className = "media-name";
+      name.textContent = item.name || "Медиафайл";
+      if (item.type === "image") {
+        const image = document.createElement("img");
+        image.className = "media-image"; image.src = item.url; image.alt = item.name || "Фотография"; image.loading = "lazy";
+        image.addEventListener("click", () => window.open(item.url, "_blank", "noopener"));
+        image.style.cursor = "zoom-in"; box.appendChild(image);
+      } else if (item.type === "audio") {
+        const audio = document.createElement("audio"); audio.controls = true; audio.preload = "metadata"; audio.src = item.url; box.appendChild(audio);
+      } else if (item.type === "video") {
+        const video = document.createElement("video"); video.controls = true; video.preload = "metadata"; video.playsInline = true; video.src = item.url; box.appendChild(video);
+      }
+      box.appendChild(name);
+      const actions = document.createElement("div"); actions.className = "media-actions";
+      const link = document.createElement("a"); link.href = item.url; link.target = "_blank"; link.rel = "noopener"; link.textContent = "Открыть / скачать";
+      actions.appendChild(link); box.appendChild(actions); grid.appendChild(box);
     }
+    parent.appendChild(grid);
+  }
 
-    function showEmpty(message) {
-        feed.replaceChildren();
+  function openEditor(post = null) {
+    if (!currentUser) return setStatus("Сначала войдите через Google.");
+    editingPost = post;
+    currentMedia = post ? parseStoredContent(post.content).media.slice() : [];
+    form.reset();
+    titleInput.value = post?.title === "Без названия" ? "" : (post?.title || "");
+    textInput.value = post ? parseStoredContent(post.content).text : "";
+    commentsInput.checked = post ? Boolean(post.allow_comment) : true;
+    filesInput.value = "";
+    selectedFiles.textContent = currentMedia.length
+      ? "Уже прикреплено файлов: " + currentMedia.length + ". Новые файлы добавятся к ним."
+      : "Новые файлы не выбраны.";
+    editorHeading.textContent = post ? "Редактирование публикации" : "Новая публикация";
+    saveButton.textContent = post ? "Сохранить изменения" : "Опубликовать";
+    editor.classList.add("open");
+    editor.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  function closeEditor() {
+    editor.classList.remove("open"); form.reset(); editingPost = null; currentMedia = [];
+    selectedFiles.textContent = "Новые файлы не выбраны.";
+    editorHeading.textContent = "Новая публикация"; saveButton.textContent = "Опубликовать";
+  }
 
-        const box = document.createElement("div");
-        box.className = "empty";
-        box.textContent = message;
+  function renderPosts(posts) {
+    feed.replaceChildren();
+    if (!posts.length) return showEmpty("Публикаций пока нет. Создайте первую запись!");
+    for (const post of posts) {
+      const card = document.createElement("article"); card.className = "post";
+      const title = document.createElement("h2"); title.className = "post-title"; title.textContent = post.title || "Без названия";
+      const date = document.createElement("div"); date.className = "post-date"; date.textContent = formatDate(post.created_at);
+      const parsed = parseStoredContent(post.content);
+      card.append(title, date);
+      if (parsed.text.trim()) { const body = document.createElement("div"); body.className = "post-text"; body.textContent = parsed.text; card.appendChild(body); }
+      addMediaToCard(card, parsed.media);
+      const comments = document.createElement("div"); comments.className = "status";
+      comments.textContent = post.allow_comment ? "💬 Комментарии разрешены" : "💬 Комментарии отключены";
+      card.appendChild(comments);
 
-        feed.appendChild(box);
+      if (currentUser && post.user_id === currentUser.id) {
+        const actions = document.createElement("div"); actions.className = "actions";
+        const edit = document.createElement("button"); edit.type = "button"; edit.textContent = "✏️ Редактировать";
+        edit.addEventListener("click", () => openEditor(post));
+        const del = document.createElement("button"); del.type = "button"; del.className = "danger"; del.textContent = "🗑️ Удалить";
+        del.addEventListener("click", () => deletePost(post, del));
+        actions.append(edit, del); card.appendChild(actions);
+      }
+      feed.appendChild(card);
     }
+  }
 
-    function updateButtons() {
-        loginButton.hidden = Boolean(currentUser);
-        logoutButton.hidden = !currentUser;
-        newButton.disabled = !currentUser;
+  async function loadPosts() {
+    if (!db || loading) return;
+    loading = true;
+    try {
+      setStatus("Загружаем публикации из базы...");
+      const { data, error } = await db.from("posts")
+        .select("id, user_id, title, content, allow_comment, created_at")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      renderPosts(data || []);
+      setStatus("Публикаций загружено: " + (data || []).length);
+    } catch (error) {
+      showEmpty("Не удалось загрузить публикации. Проверьте подключение и настройки таблицы posts.");
+      showError("Ошибка загрузки публикаций из Supabase:", error);
+    } finally { loading = false; }
+  }
 
-        if (currentUser) {
-            setStatus("Вы вошли в аккаунт: " +
-                (currentUser.email || "Google"));
-        } else {
-            setStatus(
-                "База подключена. Войдите через Google, чтобы публиковать записи."
-            );
-        }
+  async function signIn() {
+    if (!db) return setStatus("Supabase не настроен. Проверьте адрес и Publishable key в коде.");
+    try {
+      setStatus("Открываем вход через Google...");
+      const { error } = await db.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: window.location.href.split("#")[0] }
+      });
+      if (error) throw error;
+    } catch (error) { showError("Не удалось начать вход через Google:", error); }
+  }
+  async function signOut() {
+    if (!db) return;
+    try {
+      const { error } = await db.auth.signOut();
+      if (error) throw error;
+      currentUser = null; closeEditor(); updateButtons(); await loadPosts();
+    } catch (error) { showError("Не удалось выйти из аккаунта:", error); }
+  }
+
+  async function savePost(event) {
+    event.preventDefault();
+    if (!db || !currentUser) return setStatus("Для сохранения публикации сначала войдите через Google.");
+    const title = titleInput.value.trim(), text = textInput.value.trim(), allowComments = commentsInput.checked;
+    const files = Array.from(filesInput.files || []);
+    if (!title && !text && !files.length && !currentMedia.length) return setStatus("Добавьте заголовок, текст или медиафайл.");
+    saveButton.disabled = true;
+    try {
+      let media = currentMedia.slice();
+      if (files.length) media = media.concat(await uploadMedia(files));
+      const values = {
+        title: title || "Без названия",
+        content: makeStoredContent(text, media),
+        allow_comment: allowComments
+      };
+      let result;
+      if (editingPost) {
+        result = await db.from("posts").update(values).eq("id", editingPost.id).eq("user_id", currentUser.id);
+      } else {
+        result = await db.from("posts").insert({ ...values, user_id: currentUser.id });
+      }
+      if (result.error) throw result.error;
+      const wasEditing = Boolean(editingPost);
+      closeEditor();
+      setStatus(wasEditing ? "Изменения сохранены." : "Публикация сохранена.");
+      await loadPosts();
+    } catch (error) {
+      showError("Не удалось сохранить публикацию. Проверьте права доступа и настройки Storage:", error);
+    } finally { saveButton.disabled = false; }
+  }
+
+  async function deletePost(post, button) {
+    if (!currentUser || post.user_id !== currentUser.id) return setStatus("Можно удалять только собственные публикации.");
+    if (!window.confirm("Удалить эту публикацию? Это действие нельзя отменить.")) return;
+    button.disabled = true;
+    try {
+      const { error } = await db.from("posts").delete().eq("id", post.id).eq("user_id", currentUser.id);
+      if (error) throw error;
+      const media = parseStoredContent(post.content).media;
+      const paths = media.map(item => item.path).filter(path => typeof path === "string" && path.startsWith(currentUser.id + "/"));
+      if (paths.length) {
+        const { error: storageError } = await db.storage.from(STORAGE_BUCKET).remove(paths);
+        if (storageError) console.warn("Публикация удалена, но не все файлы удалось удалить из Storage:", storageError);
+      }
+      setStatus("Публикация удалена.");
+      await loadPosts();
+    } catch (error) {
+      button.disabled = false;
+      showError("Не удалось удалить публикацию. Возможно, требуется разрешить DELETE для собственных записей в Supabase:", error);
     }
-
-    // =========================================
-    // 4. НАСТРОЙКИ ОФОРМЛЕНИЯ
-    // =========================================
-
-    function applyTextSettings() {
-        const color = textColor.value;
-        const size = Number(textSize.value);
-
-        document.documentElement.style.setProperty(
-            "--text",
-            color
-        );
-
-        document.documentElement.style.setProperty(
-            "--post-text-size",
-            size + "px"
-        );
-
-        textSizeValue.textContent = size + " px";
-        textPreview.style.color = color;
-        textPreview.style.fontSize = size + "px";
-
-        try {
-            localStorage.setItem("myfeed_text_color", color);
-            localStorage.setItem("myfeed_text_size", String(size));
-        } catch (error) {
-            console.warn("Не удалось сохранить оформление:", error);
-        }
-    }
-
-    function loadTextSettings() {
-        try {
-            const savedColor =
-                localStorage.getItem("myfeed_text_color");
-
-            const savedSize =
-                localStorage.getItem("myfeed_text_size");
-
-            if (savedColor && /^#[0-9a-f]{6}$/i.test(savedColor)) {
-                textColor.value = savedColor;
-            }
-
-            if (savedSize) {
-                const size = Number(savedSize);
-
-                if (Number.isFinite(size) && size >= 12 && size <= 28) {
-                    textSize.value = String(size);
-                }
-            }
-        } catch (error) {
-            console.warn("Не удалось прочитать настройки:", error);
-        }
-
-        applyTextSettings();
-    }
-
-    settingsButton.addEventListener("click", () => {
-        settingsPanel.hidden = !settingsPanel.hidden;
-    });
-
-    textColor.addEventListener("input", applyTextSettings);
-    textSize.addEventListener("input", applyTextSettings);
-
-    defaultColorButton.addEventListener("click", () => {
-        textColor.value = "#C5D2C1";
-        textSize.value = "16";
-        applyTextSettings();
-    });
-
-    loadTextSettings();
-
-    // =========================================
-    // 5. РЕДАКТОР ПУБЛИКАЦИИ
-    // =========================================
-
-    function openEditor() {
-        if (!currentUser) {
-            setStatus("Сначала войдите через Google.");
-            return;
-        }
-
-        form.reset();
-        selectedFiles.textContent = "Файлы не выбраны.";
-
-        editor.classList.add("open");
-
-        editor.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-    }
-
-    function closeEditor() {
-        editor.classList.remove("open");
-        form.reset();
-        selectedFiles.textContent = "Файлы не выбраны.";
-    }
-
-    mediaFiles.addEventListener("change", () => {
-        const files = Array.from(mediaFiles.files || []);
-
-        if (!files.length) {
-            selectedFiles.textContent = "Файлы не выбраны.";
-            return;
-        }
-
-        selectedFiles.textContent =
-            "Выбрано файлов: " + files.length + ". " +
-            files.map(file => file.name).join(", ");
-    });
-    // =========================================
-    // 6. ЗАГРУЗКА ФАЙЛОВ В SUPABASE STORAGE
-    // =========================================
-
-    function safeFileName(name) {
-        return name
-            .normalize("NFKD")
-            .replace(/[^\w.\-]+/g, "_")
-            .replace(/_+/g, "_")
-            .slice(-120) || "file";
-    }
-
-    function detectMediaType(file) {
-        if (file.type.startsWith("image/")) return "image";
-        if (file.type.startsWith("audio/")) return "audio";
-        if (file.type.startsWith("video/")) return "video";
-        return null;
-    }
-
-    async function uploadMedia(files) {
-        const uploaded = [];
-
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const type = detectMediaType(file);
-
-            if (!type) {
-                throw new Error(
-                    "Неподдерживаемый тип файла: " + file.name
-                );
-            }
-
-            const path =
-                currentUser.id + "/" +
-                Date.now() + "_" +
-                i + "_" +
-                safeFileName(file.name);
-
-            setStatus(
-                "Загружаем файл " + (i + 1) + " из " +
-                files.length + ": " + file.name
-            );
-
-            const { error } = await db.storage
-                .from(STORAGE_BUCKET)
-                .upload(path, file, {
-                    cacheControl: "3600",
-                    upsert: false,
-                    contentType: file.type || undefined
-                });
-
-            if (error) {
-                throw error;
-            }
-
-            const { data } = db.storage
-                .from(STORAGE_BUCKET)
-                .getPublicUrl(path);
-
-            uploaded.push({
-                name: file.name,
-                type: type,
-                path: path,
-                url: data.publicUrl
-            });
-        }
-
-        return uploaded;
-    }
-
-    // =========================================
-    // 7. ФОРМАТ МЕДИА В СУЩЕСТВУЮЩЕМ ПОЛЕ CONTENT
-    // =========================================
-    //
-    // Новую колонку в таблице posts создавать не нужно.
-    // Текст и сведения о медиа хранятся в поле content.
-    // Старые текстовые публикации останутся читаемыми.
-    //
-    // Примечание: если пользователь когда-либо введёт
-    // точно такой же маркер в собственный текст,
-    // он будет воспринят как служебная информация.
-
-    const MEDIA_MARKER = "\n\n[[MYFEED_MEDIA_V1:";
-
-    function makeStoredContent(text, media) {
-        if (!media.length) {
-            return text;
-        }
-
-        return text +
-            MEDIA_MARKER +
-            JSON.stringify(media) +
-            "]]";
-    }
-
-    function parseStoredContent(content) {
-        const value = String(content || "");
-        const markerIndex = value.lastIndexOf(MEDIA_MARKER);
-
-        if (markerIndex < 0) {
-            return {
-                text: value,
-                media: []
-            };
-        }
-
-        const jsonStart = markerIndex + MEDIA_MARKER.length;
-        const jsonEnd = value.indexOf("]]", jsonStart);
-
-        if (jsonEnd < 0) {
-            return {
-                text: value,
-                media: []
-            };
-        }
-
-        try {
-            const media = JSON.parse(value.slice(jsonStart, jsonEnd));
-
-            if (!Array.isArray(media)) {
-                return {
-                    text: value,
-                    media: []
-                };
-            }
-
-            return {
-                text: value.slice(0, markerIndex),
-                media: media.filter(item =>
-                    item &&
-                    typeof item.url === "string" &&
-                    ["image", "audio", "video"].includes(item.type)
-                )
-            };
-        } catch (error) {
-            console.warn("Не удалось прочитать сведения о медиа:", error);
-
-            return {
-                text: value,
-                media: []
-            };
-        }
-    }
-
-    // =========================================
-    // 8. ПРОСМОТР ФОТОГРАФИЙ
-    // =========================================
-
-    function openImage(url, alt) {
-        modalImage.src = url;
-        modalImage.alt = alt || "Фотография";
-        imageModal.hidden = false;
-        document.body.style.overflow = "hidden";
-    }
-
-    function closeImage() {
-        imageModal.hidden = true;
-        modalImage.removeAttribute("src");
-        document.body.style.overflow = "";
-    }
-
-    closeImageModal.addEventListener("click", closeImage);
-
-    imageModal.addEventListener("click", event => {
-        if (event.target === imageModal) {
-            closeImage();
-        }
-    });
-
-    document.addEventListener("keydown", event => {
-        if (event.key === "Escape" && !imageModal.hidden) {
-            closeImage();
-        }
-    });
-
-    // =========================================
-    // 9. ОТОБРАЖЕНИЕ МЕДИАФАЙЛОВ
-    // =========================================
-
-    function createDownloadLink(url, name) {
-        const link = document.createElement("a");
-
-        link.href = url;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-        link.download = name || "download";
-
-        link.textContent = "Скачать";
-
-        return link;
-    }
-
-    function renderMedia(media) {
-        const grid = document.createElement("div");
-        grid.className = "media-grid";
-
-        for (const item of media) {
-            if (!item.url) continue;
-
-            const box = document.createElement("div");
-            box.className = "media-item";
-
-            const name = document.createElement("div");
-            name.className = "media-name";
-            name.textContent = item.name || "Медиафайл";
-
-            if (item.type === "image") {
-                const image = document.createElement("img");
-
-                image.className = "media-image";
-                image.src = item.url;
-                image.alt = item.name || "Фотография";
-                image.loading = "lazy";
-
-                image.addEventListener("click", () => {
-                    openImage(item.url, item.name);
-                });
-
-                box.appendChild(image);
-            }
-
-            if (item.type === "audio") {
-                const audio = document.createElement("audio");
-
-                audio.controls = true;
-                audio.preload = "metadata";
-                audio.src = item.url;
-
-                box.appendChild(audio);
-            }
-
-            if (item.type === "video") {
-                const video = document.createElement("video");
-
-                video.controls = true;
-                video.preload = "metadata";
-                video.playsInline = true;
-                video.src = item.url;
-
-                box.appendChild(video);
-            }
-
-            box.appendChild(name);
-
-            const actions = document.createElement("div");
-            actions.className = "media-actions";
-
-            actions.appendChild(
-                createDownloadLink(item.url, item.name)
-            );
-
-            box.appendChild(actions);
-            grid.appendChild(box);
-        }
-
-        return grid;
-    }
-
-    // =========================================
-    // 10. ОТОБРАЖЕНИЕ ПУБЛИКАЦИЙ
-    // =========================================
-
-    function renderPosts(posts) {
-        feed.replaceChildren();
-
-        if (!posts.length) {
-            showEmpty("Публикаций пока нет. Создайте первую запись!");
-            return;
-        }
-
-        for (const post of posts) {
-            const card = document.createElement("article");
-            card.className = "post";
-
-            const title = document.createElement("h2");
-            title.className = "post-title";
-            title.textContent = post.title || "Без названия";
-
-            const date = document.createElement("div");
-            date.className = "post-date";
-            date.textContent = formatDate(post.created_at);
-
-            const parsed = parseStoredContent(post.content);
-
-            const text = document.createElement("div");
-            text.className = "post-text";
-            text.textContent = parsed.text;
-
-            const comments = document.createElement("div");
-            comments.className = "status";
-
-            comments.textContent = post.allow_comment
-                ? "💬 Комментарии разрешены"
-                : "💬 Комментарии отключены";
-
-            card.append(title, date);
-
-            if (parsed.text.trim()) {
-                card.appendChild(text);
-            }
-
-            if (parsed.media.length) {
-                card.appendChild(renderMedia(parsed.media));
-            }
-
-            card.appendChild(comments);
-            feed.appendChild(card);
-        }
-    }
-    // =========================================
-    // 11. ЗАГРУЗКА ПУБЛИКАЦИЙ ИЗ SUPABASE
-    // =========================================
-
-    async function loadPosts() {
-        if (!db || loading) return;
-
-        loading = true;
-        setStatus("Загружаем публикации из базы...");
-
-        try {
-            const { data, error } = await db
-                .from("posts")
-                .select("id, title, content, allow_comment, created_at")
-                .order("created_at", { ascending: false });
-
-            if (error) {
-                throw error;
-            }
-
-            renderPosts(data || []);
-
-            setStatus(
-                "Публикаций загружено: " + (data || []).length
-            );
-        } catch (error) {
-            showEmpty(
-                "Не удалось загрузить публикации. Проверьте подключение и настройки таблицы posts."
-            );
-
-            showError(
-                "Ошибка загрузки публикаций из Supabase:",
-                error
-            );
-        } finally {
-            loading = false;
-        }
-    }
-
-    // =========================================
-    // 12. ВХОД ЧЕРЕЗ GOOGLE
-    // =========================================
-
-    async function signIn() {
-        if (!db) {
-            setStatus(
-                "Supabase не настроен. Проверьте URL и Publishable key."
-            );
-            return;
-        }
-
-        setStatus("Открываем вход через Google...");
-
-        try {
-            const redirectUrl =
-                window.location.origin + window.location.pathname;
-
-            const { error } = await db.auth.signInWithOAuth({
-                provider: "google",
-                options: {
-                    redirectTo: redirectUrl
-                }
-            });
-
-            if (error) {
-                showError(
-                    "Не удалось начать вход через Google:",
-                    error
-                );
-            }
-        } catch (error) {
-            showError("Ошибка входа через Google:", error);
-        }
-    }
-
-    // =========================================
-    // 13. ВЫХОД ИЗ АККАУНТА
-    // =========================================
-
-    async function signOut() {
-        if (!db) return;
-
-        try {
-            const { error } = await db.auth.signOut();
-
-            if (error) {
-                throw error;
-            }
-
-            currentUser = null;
-            closeEditor();
-            updateButtons();
-
-            await loadPosts();
-        } catch (error) {
-            showError("Не удалось выйти из аккаунта:", error);
-        }
-    }
-
-    // =========================================
-    // 14. СОХРАНЕНИЕ НОВОЙ ПУБЛИКАЦИИ
-    // =========================================
-
-    async function savePost(event) {
-        event.preventDefault();
-
-        if (!db || !currentUser) {
-            setStatus(
-                "Для сохранения публикации сначала войдите через Google."
-            );
-            return;
-        }
-
-        const title =
-            document.getElementById("postTitle").value.trim();
-
-        const text =
-            document.getElementById("postText").value.trim();
-
-        const allowComments =
-            document.getElementById("allowComments").checked;
-
-        const files = Array.from(mediaFiles.files || []);
-
-        if (!title && !text && !files.length) {
-            setStatus(
-                "Добавьте заголовок, текст или хотя бы один файл."
-            );
-            return;
-        }
-
-        saveButton.disabled = true;
-        setStatus("Подготавливаем публикацию...");
-
-        let uploadedMedia = [];
-
-        try {
-            if (files.length) {
-                uploadedMedia = await uploadMedia(files);
-            }
-
-            const content = makeStoredContent(text, uploadedMedia);
-
-            const { error } = await db
-                .from("posts")
-                .insert({
-                    user_id: currentUser.id,
-                    title: title || "Без названия",
-                    content: content,
-                    allow_comment: allowComments
-                });
-
-            if (error) {
-                throw error;
-            }
-
-            closeEditor();
-
-            setStatus("Публикация сохранена!");
-
-            await loadPosts();
-        } catch (error) {
-            showError(
-                "Не удалось сохранить публикацию. Проверьте права доступа и настройки Storage:",
-                error
-            );
-
-            if (uploadedMedia.length) {
-                console.warn(
-                    "Файлы могли загрузиться в Storage, хотя запись не сохранилась. При необходимости их можно удалить из Storage вручную.",
-                    uploadedMedia
-                );
-            }
-        } finally {
-            saveButton.disabled = false;
-        }
-    }
-
-    // =========================================
-    // 15. ЗАПУСК ПРИЛОЖЕНИЯ
-    // =========================================
-
-    async function start() {
-        if (!window.supabase) {
-            setStatus(
-                "Не удалось загрузить библиотеку Supabase. Проверьте интернет-соединение."
-            );
-            return;
-        }
-
-        try {
-            db = window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_PUBLISHABLE_KEY
-            );
-
-            const { data, error } = await db.auth.getSession();
-
-            if (error) {
-                throw error;
-            }
-
-            currentUser = data.session
-                ? data.session.user
-                : null;
-
-            updateButtons();
-            await loadPosts();
-
-            db.auth.onAuthStateChange((_event, session) => {
-                currentUser = session
-                    ? session.user
-                    : null;
-
-                updateButtons();
-
-                setTimeout(() => {
-                    loadPosts();
-                }, 0);
-            });
-        } catch (error) {
-            showError("Ошибка подключения к Supabase:", error);
-        }
-    }
-
-    // =========================================
-    // 16. ОБРАБОТЧИКИ КНОПОК
-    // =========================================
-
-    loginButton.addEventListener("click", signIn);
-    logoutButton.addEventListener("click", signOut);
-
-    newButton.addEventListener("click", openEditor);
-    cancelButton.addEventListener("click", closeEditor);
-
-    form.addEventListener("submit", savePost);
-
-    start();
-
+  }
+
+  filesInput.addEventListener("change", () => {
+    const files = Array.from(filesInput.files || []);
+    selectedFiles.textContent = files.length ? "Выбрано файлов: " + files.map(file => file.name).join(", ") : "Новые файлы не выбраны.";
+  });
+  loginButton.addEventListener("click", signIn);
+  logoutButton.addEventListener("click", signOut);
+  newButton.addEventListener("click", () => openEditor());
+  cancelButton.addEventListener("click", closeEditor);
+  form.addEventListener("submit", savePost);
+
+  async function start() {
+    if (!window.supabase) return setStatus("Не удалось загрузить библиотеку Supabase. Проверьте интернет-соединение.");
+    try {
+      db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+      const { data, error } = await db.auth.getSession();
+      if (error) throw error;
+      currentUser = data.session ? data.session.user : null;
+      updateButtons();
+      await loadPosts();
+      db.auth.onAuthStateChange((_event, session) => {
+        currentUser = session ? session.user : null;
+        updateButtons();
+        if (!currentUser && editor.classList.contains("open")) closeEditor();
+        setTimeout(() => loadPosts(), 0);
+      });
+    } catch (error) { showError("Ошибка подключения к Supabase:", error); }
+  }
+  start();
 })();
 </script>
-
 </body>
 </html>
