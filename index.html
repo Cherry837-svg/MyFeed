@@ -286,12 +286,8 @@
         return date.toLocaleString("ru-RU");
     }
 
-    function showEmpty(message) {
-        feed.replaceChildren();
-     box.className = "empty";
-        box.textContent = message;
-        feed.appendChild(box);
-    }
+    function showEmpty(message) { feed.replaceChildren(); const box = document.createElement("div"); box.className = "empty"; box.textContent = message; feed.appendChild(box); } 
+
 
     function updateButtons() {
         loginButton.hidden = Boolean(currentUser);
