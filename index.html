@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -286,8 +286,10 @@
         return date.toLocaleString("ru-RU");
     }
 
-    function showEmpty(message) { feed.replaceChildren(); const box = document.createElement("div"); box.className = "empty"; box.textContent = message; feed.appendChild(box); } 
-
+    function showEmpty(message) { feed.replaceChildren(); const box = document.createElement("div");          box.className = "empty";
+        box.textContent = message;
+        feed.appendChild(box);
+    }
 
     function updateButtons() {
         loginButton.hidden = Boolean(currentUser);
@@ -344,7 +346,8 @@
 
             const text = document.createElement("div");
             text.className = "post-text";
-            text.textContent = post.text || post.content || "";
+            // Читаем только существующее поле content
+            text.textContent = post.content || "";
 
             const comments = document.createElement("div");
             comments.className = "status";
@@ -370,7 +373,7 @@
         try {
             const { data, error } = await db
                 .from("posts")
-                .select("id, title,content, allow_comment, created_at")
+                .select("id, title, content, allow_comment, created_at") // Поле text полностью удалено
                 .order("created_at", { ascending: false });
 
             if (error) {
@@ -400,7 +403,7 @@
             const { error } = await db.auth.signInWithOAuth({
                 provider: "google",
                 options: {
-                    redirectTo: window.location.href.split("#")[0]
+                    redirectTo: window.location.href.split("#")
                 }
             });
             if (error) {
@@ -457,8 +460,7 @@
                 .insert({
                     user_id: currentUser.id,
                     title: title || "Без названия",
-                    
-                    content: text,
+                    content: text, // Поле text полностью удалено
                     allow_comment: allowComments
                 });
 
@@ -523,5 +525,3 @@
 </script>
 </body>
 </html>
-
- 
