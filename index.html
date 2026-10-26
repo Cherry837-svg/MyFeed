@@ -135,19 +135,21 @@
 
   function parseStoredContent(content) {
     const value = String(content || "");
-    const markerIndex = value.lastIndexOf(MEDIA_MARKER);
+    // Ищем сам маркер без привязки к количеству переводов строк перед ним.
+    // Это позволяет прочитать и публикации, сохранённые предыдущими версиями сайта.
+    const marker = "[[MYFEED_MEDIA_V1:";
+    const markerIndex = value.lastIndexOf(marker);
     if (markerIndex < 0) return { text: value, media: [] };
-    const jsonStart = markerIndex + MEDIA_MARKER.length;
-    const jsonEnd = value.indexOf("]]", jsonStart);
-    if (jsonEnd < 0) return { text: value, media: [] };
+    const jsonStart = markerIndex + marker.length;
+    const jsonEnd = value.lastIndexOf("]]" );
+    if (jsonEnd < jsonStart) return { text: value, media: [] };
     try {
-      const media = JSON.parse(value.slice(jsonStart, jsonEnd));
+      const media = JSON.parse(value.slice(jsonStart, jsonEnd).trim());
       if (!Array.isArray(media)) return { text: value, media: [] };
-      return {
-        text: value.slice(0, markerIndex),
-        media: media.filter(item => item && typeof item.url === "string" &&
-          ["image", "audio", "video"].includes(item.type))
-      };
+      const validMedia = media.filter(item => item && typeof item.url === "string" &&
+        ["image", "audio", "video"].includes(String(item.type || "").toLowerCase()));
+      if (!validMedia.length && media.length) return { text: value, media: [] };
+      return { text: value.slice(0, markerIndex).trimEnd(), media: validMedia };
     } catch (error) {
       console.warn("Не удалось прочитать сведения о медиа:", error);
       return { text: value, media: [] };
@@ -191,14 +193,19 @@
       const box = document.createElement("div"); box.className = "media-item";
       const name = document.createElement("div"); name.className = "media-name";
       name.textContent = item.name || "Медиафайл";
-      if (item.type === "image") {
+      const mediaType = String(item.type || "").toLowerCase();
+      if (mediaType === "image") {
         const image = document.createElement("img");
         image.className = "media-image"; image.src = item.url; image.alt = item.name || "Фотография"; image.loading = "lazy";
         image.addEventListener("click", () => window.open(item.url, "_blank", "noopener"));
         image.style.cursor = "zoom-in"; box.appendChild(image);
-      } else if (item.type === "audio") {
-        const audio = document.createElement("audio"); audio.controls = true; audio.preload = "metadata"; audio.src = item.url; box.appendChild(audio);
-      } else if (item.type === "video") {
+      } else if (mediaType === "audio") {
+        const audio = document.createElement("audio");
+        audio.controls = true; audio.preload = "metadata"; audio.src = item.url;
+        audio.setAttribute("aria-label", item.name || "Аудиоплеер");
+        audio.addEventListener("error", () => console.warn("Не удалось загрузить аудиофайл:", item.url, audio.error));
+        box.appendChild(audio);
+      } else if (mediaType === "video") {
         const video = document.createElement("video"); video.controls = true; video.preload = "metadata"; video.playsInline = true; video.src = item.url; box.appendChild(video);
       }
       box.appendChild(name);
