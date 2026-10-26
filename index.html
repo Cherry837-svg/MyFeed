@@ -311,14 +311,20 @@
         content: makeStoredContent(text, media),
         allow_comment: allowComments
       };
-      let result;
-      if (editingPost) {
-        result = await db.from("posts").update(values).eq("id", editingPost.id).eq("user_id", currentUser.id);
-      } else {
-        result = await db.from("posts").insert({ ...values, user_id: currentUser.id });
-      }
-      if (result.error) throw result.error;
       const wasEditing = Boolean(editingPost);
+      if (wasEditing) {
+        const { data, error } = await db.from("posts")
+          .update(values)
+          .eq("id", editingPost.id)
+          .eq("user_id", currentUser.id)
+          .select("id")
+          .maybeSingle();
+        if (error) throw error;
+        if (!data) throw new Error("Supabase не изменила запись. Проверьте, что политика UPDATE разрешает изменение записей, где user_id совпадает с auth.uid().");
+      } else {
+        const { error } = await db.from("posts").insert({ ...values, user_id: currentUser.id });
+        if (error) throw error;
+      }
       closeEditor();
       setStatus(wasEditing ? "Изменения сохранены." : "Публикация сохранена.");
       await loadPosts();
@@ -332,8 +338,14 @@
     if (!window.confirm("Удалить эту публикацию? Это действие нельзя отменить.")) return;
     button.disabled = true;
     try {
-      const { error } = await db.from("posts").delete().eq("id", post.id).eq("user_id", currentUser.id);
+      const { data, error } = await db.from("posts")
+        .delete()
+        .eq("id", post.id)
+        .eq("user_id", currentUser.id)
+        .select("id")
+        .maybeSingle();
       if (error) throw error;
+      if (!data) throw new Error("Supabase не удалила запись. Проверьте, что политика DELETE разрешает удаление записей, где user_id совпадает с auth.uid().");
       const media = parseStoredContent(post.content).media;
       const paths = media.map(item => item.path).filter(path => typeof path === "string" && path.startsWith(currentUser.id + "/"));
       if (paths.length) {
