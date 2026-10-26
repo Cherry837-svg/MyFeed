@@ -126,14 +126,15 @@
     box.className = "empty"; box.textContent = message; feed.appendChild(box);
   }
   function updateButtons() {
-    loginButton.hidden = Boolean(currentUser);
+    logfuncinButton.hidden = Boolean(currentUser);
     logoutButton.hidden = !currentUser;
     newButton.disabled = !currentUser;
     if (currentUser) setStatus("Вы вошли в аккаунт: " + (currentUser.email || ""));
     else setStatus("База подключена. Войдите через Google, чтобы публиковать записи.");
   }
 
-  function parseStoredContent(content) {
+  akeStoredContent(text, media) {
+    return me function parseStoredContent(content) {
     const value = String(content || "");
     // Ищем сам маркер без привязки к количеству переводов строк перед ним.
     // Это позволяет прочитать и публикации, сохранённые предыдущими версиями сайта.
@@ -155,8 +156,7 @@
       return { text: value, media: [] };
     }
   }
-  function makeStoredContent(text, media) {
-    return media.length ? text + MEDIA_MARKER + JSON.stringify(media) + "]]" : text;
+  function mdia.length ? text + MEDIA_MARKER + JSON.stringify(media) + "]]" : text;
   }
   function detectMediaType(file) {
     const mime = (file.type || "").toLowerCase();
